@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kraj časa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    .time-box {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      font-size: 1.5rem;
+    }
+    .countdown {
+      font-size: 2.2rem;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>⏰ Vreme do kraja časa</h1>
+  <div class="time-box">
+    <div id="classInfo">Učitavanje...</div>
+    <div class="countdown" id="countdown"></div>
+  </div>
+
+  <script>
+    // Raspored časova
+    const schedule = [
+      ["08:00", "08:45"],
+      ["08:50", "09:35"],
+      ["09:55", "10:40"],
+      ["10:45", "11:30"],
+      ["11:35", "12:20"],
+      ["12:30", "13:15"],
+      ["13:20", "14:05"]
+    ];
+
+    function getTimeRemaining(endTime) {
+      const now = new Date();
+      const [h, m] = endTime.split(":").map(Number);
+      const end = new Date(now);
+      end.setHours(h, m, 0, 0);
+      return end - now;
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+
+      let currentClass = null;
+      for (let i = 0; i < schedule.length; i++) {
+        const [start, end] = schedule[i];
+        const [sh, sm] = start.split(":").map(Number);
+        const [eh, em] = end.split(":").map(Number);
+
+        const startTime = new Date(now);
+        startTime.setHours(sh, sm, 0, 0);
+
+        const endTime = new Date(now);
+        endTime.setHours(eh, em, 0, 0);
+
+        if (now >= startTime && now <= endTime) {
+          currentClass = { index: i+1, start, end };
+          break;
+        }
+      }
+
+      if (currentClass) {
+        const remaining = getTimeRemaining(currentClass.end);
+        const minutes = Math.floor((remaining / 1000 / 60));
+        const seconds = Math.floor((remaining / 1000) % 60);
+        document.getElementById("classInfo").innerText =
+          `Trenutno je ${currentClass.index}. čas (${currentClass.start} - ${currentClass.end})`;
+        document.getElementById("countdown").innerText =
+          `${minutes}m ${seconds}s do kraja časa`;
+      } else {
+        document.getElementById("classInfo").innerText = "Sada nije čas 📚";
+        document.getElementById("countdown").innerText = "";
+      }
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
